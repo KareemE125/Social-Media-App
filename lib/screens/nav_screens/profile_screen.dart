@@ -9,6 +9,7 @@ import 'package:social_media_app/cubit/app_cubit.dart';
 import 'package:social_media_app/cubit/app_states.dart';
 import 'package:social_media_app/models/current_user.dart';
 import 'package:social_media_app/screens/add_post_screen.dart';
+import 'package:social_media_app/screens/friends_screen.dart';
 import 'package:social_media_app/screens/update_profile_screen.dart';
 
 
@@ -87,7 +88,10 @@ class ProfileScreen extends StatelessWidget {
                    children: [
                      Expanded(child: textColumn(text:'Posts', subText:CurrentUser.postCount.toString())),
                      SizedBox(width: 8),
-                     Expanded(child: textColumn(text:'Friends', subText:CurrentUser.friendsCount.toString())),
+                     Expanded(child: InkWell(
+                       child: textColumn(text:'Friends', subText:CurrentUser.friendsCount.toString()),
+                       onTap: () => Navigator.of(context).pushNamed(FriendsScreen.routeName),
+                     ),),
                      SizedBox(width: 8),
                      Expanded(child: textColumn(text:'Shares', subText:CurrentUser.sharesCount.toString())),
                    ],
@@ -125,9 +129,9 @@ class ProfileScreen extends StatelessWidget {
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: AppCubit.userPostsList.length,
-                    itemBuilder: (_,i) => Post(AppCubit.userPostsList[i]),
-                  )
-              )
+                    itemBuilder: (_,i) => Post(AppCubit.userPostsList[i],null),
+                  ),
+              ),
             ],
           ),
         );

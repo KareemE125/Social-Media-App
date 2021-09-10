@@ -39,6 +39,10 @@ class AppGetUserPostsLoadingState extends AppStates{}
 class AppGetUserPostsSuccessState extends AppStates{}
 class AppGetUserPostsErrorState extends AppStates{}
 
+class AppGetHomePostsLoadingState extends AppStates{}
+class AppGetHomePostsSuccessState extends AppStates{}
+class AppGetHomePostsErrorState extends AppStates{}
+
 class AppPostLikeLoadingState extends AppStates{}
 class AppPostLikeSuccessState extends AppStates{}
 class AppPostLikeErrorState extends AppStates{}

@@ -30,7 +30,7 @@ class ChattingScreen extends StatelessWidget {
        Future.delayed(Duration(milliseconds: 1000)).then((value){
          if (scrollController.hasClients) {
            scrollController.animateTo(
-             scrollController.position.maxScrollExtent + 1000,
+             scrollController.position.maxScrollExtent + 200,
              duration: Duration(milliseconds: 100),
              curve: Curves.easeInCirc
            );

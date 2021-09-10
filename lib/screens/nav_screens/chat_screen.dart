@@ -68,7 +68,7 @@ class ChatScreen extends StatelessWidget {
             childAspectRatio: 1/1.3,
             children: List.generate(AppCubit.chatsList.length, (i) => InkWell(
               child: Card(
-                color: Theme.of(context).primaryColorDark,
+                color: Colors.blueGrey.shade900,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(

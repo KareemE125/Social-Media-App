@@ -15,7 +15,7 @@ class AlertsScreen extends StatelessWidget {
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
-        final user = AppCubit.user;
+        //final user = AppCubit.user;
         final cubit = AppCubit.get(context);
         if (isInit) {
           isInit = false;

@@ -32,6 +32,8 @@ class AppCubit extends Cubit<AppStates>
 
   static List<PostModel> userPostsList = [];
 
+  static List<PostModel> homePostsList = [];
+
   static List<UserModel> friendsList = [];
 
   static List<ChatModel> chatsList = [];
@@ -54,31 +56,100 @@ class AppCubit extends Cubit<AppStates>
     }
   }
 
-  Future<void> getUserPosts(BuildContext context) async
+  Future<dynamic> getUserPosts(BuildContext context,[String? userUid]) async
   {
     emit(AppGetUserPostsLoadingState());
     try
     {
       List<PostModel> list = [];
       await FirebaseFirestore.instance.collection('Users')
-      .doc(user!.uid).collection('Posts').get()
+      .doc(userUid??user!.uid).collection('Posts').get()
       .then((snapShotMap){
         snapShotMap.docs.forEach((post) {
           list.add(PostModel.fromJson(post.data()));
         });
       });
 
-      if(list.isNotEmpty){
-        list.sort((a, b) => DateTime.parse(a.postDateTime).compareTo(DateTime.parse(b.postDateTime)));
-        userPostsList = list.reversed.toList();
+      if(userUid == null)
+      {
+        if(list.isNotEmpty){
+          list.sort((a, b) => DateTime.parse(a.postDateTime).compareTo(DateTime.parse(b.postDateTime)));
+          userPostsList = list.reversed.toList();
+        }
+        else{ userPostsList =[PostModel(postId: '', publisherId: '', publisherName: '', publisherProfileImageUrl: '', postDateTime: '', postContentText: '', postContentImageUrl: '')]; }
       }
-      else{ userPostsList =[PostModel(postId: '', publisherId: '', publisherName: '', publisherProfileImageUrl: '', postDateTime: '', postContentText: '', postContentImageUrl: '')]; }
+      else
+      {
+        if(list.isNotEmpty){
+          list.sort((a, b) => DateTime.parse(a.postDateTime).compareTo(DateTime.parse(b.postDateTime)));
+          return list.reversed.toList();
+        }
+        else{ return [PostModel(postId: '', publisherId: '', publisherName: '', publisherProfileImageUrl: '', postDateTime: '', postContentText: '', postContentImageUrl: '')]; }
+      }
 
       emit(AppGetUserPostsSuccessState());
     }
     catch(error)
     {
       emit(AppGetUserPostsErrorState());
+      String message = error.toString().substring(error.toString().indexOf("]")+1).trim();
+      toast(context,message);
+    }
+  }
+
+  Future<dynamic> getHomePosts(BuildContext context) async
+  {
+    emit(AppGetHomePostsLoadingState());
+    try
+    {
+      List<PostModel> list = [];
+      List<String> friendsIds = [];
+
+      // add current user posts
+      await FirebaseFirestore.instance.collection('Users')
+          .doc(user!.uid).collection('Posts').get()
+          .then((snapShotMap){
+        snapShotMap.docs.forEach((post) {
+          list.add(PostModel.fromJson(post.data()));
+        });
+      });
+
+      // add friends posts
+      await FirebaseFirestore.instance.collection('Users')
+          .doc(CurrentUser.uid).collection('Friends').get().then((value){
+        value.docs.forEach((friend){
+          friendsIds.add(friend.data()['Friend']);
+        });
+      });
+
+      if(friendsIds.isNotEmpty)
+      {
+        await FirebaseFirestore.instance.collection('Users').get().then((value)
+        async {
+          for(var element in value.docs)
+          {
+            if(friendsIds.contains(element.id))
+            {
+              await FirebaseFirestore.instance.collection('Users')
+              .doc(element.id).collection('Posts').get().then((snapShotMap) =>
+                snapShotMap.docs.forEach((post) { list.add(PostModel.fromJson(post.data())); }) );
+            }
+          }
+        });
+      }
+
+      if(list.isNotEmpty)
+      {
+        list.sort((a, b) => DateTime.parse(a.postDateTime).compareTo(DateTime.parse(b.postDateTime)));
+        homePostsList = list.reversed.toList();
+      }
+      else{ homePostsList =[PostModel(postId: '', publisherId: '', publisherName: '', publisherProfileImageUrl: '', postDateTime: '', postContentText: '', postContentImageUrl: '')]; }
+
+      emit(AppGetHomePostsSuccessState());
+    }
+    catch(error)
+    {
+      emit(AppGetHomePostsErrorState());
       String message = error.toString().substring(error.toString().indexOf("]")+1).trim();
       toast(context,message);
     }
@@ -252,6 +323,12 @@ class AppCubit extends Cubit<AppStates>
     }
   }
 
+  Future<void> _updatePosts(BuildContext context) async
+  {
+    await getHomePosts(context);
+    await getUserPosts(context);
+  }
+
   Future<void> toggleLike(String publisherId, String postId, bool isLiked, BuildContext context) async
   {
     emit(AppPostLikeLoadingState());
@@ -266,8 +343,8 @@ class AppCubit extends Cubit<AppStates>
             likersIdsList = value.data()!['likersIds'];
           });
 
-      if(isLiked){ numLikes++; likersIdsList.add(publisherId); }
-      else { numLikes--; likersIdsList.remove(publisherId); }
+      if(isLiked){ numLikes++; likersIdsList.add(AppCubit.user!.uid); }
+      else { numLikes--; likersIdsList.remove(AppCubit.user!.uid); }
 
       await FirebaseFirestore.instance.collection('Users')
           .doc(publisherId).collection('Posts').doc(postId)
@@ -275,6 +352,8 @@ class AppCubit extends Cubit<AppStates>
         'postLikesCount' : numLikes,
         'likersIds' : likersIdsList
       });
+
+      await _updatePosts(context);
 
       emit(AppPostLikeSuccessState());
     }
@@ -328,6 +407,8 @@ class AppCubit extends Cubit<AppStates>
       });
 
       emit(AppPostingCommentSuccessState());
+
+      await _updatePosts(context);
     }
     catch(error)
     {
@@ -342,20 +423,21 @@ class AppCubit extends Cubit<AppStates>
     emit(AppGetFriendsLoadingState());
     try
     {
-      List<String> ids = [];
+      List<String> friendsIds = [];
       List<UserModel> list = [];
+
 
       await FirebaseFirestore.instance.collection('Users')
         .doc(CurrentUser.uid).collection('Friends').get().then((value){
           value.docs.forEach((friend){
-            ids.add(friend.data()['Friend']);
+            friendsIds.add(friend.data()['Friend']);
           });
       });
 
       await FirebaseFirestore.instance.collection('Users').get()
       .then((value){
         value.docs.forEach((element){
-          if(ids.contains(element.id)){
+          if(friendsIds.contains(element.id)){
             list.add(UserModel.fromJson(element.data()));
           }
         });
@@ -378,25 +460,36 @@ class AppCubit extends Cubit<AppStates>
     emit(AppAddFriendLoadingState());
     try
     {
-      await FirebaseFirestore.instance.collection('Users').doc(CurrentUser.uid)
-          .collection('Friends').doc(AppCubit.friendsList.length.toString())
-          .set({'Friend': friendId });
+      bool isFound = false;
 
-      await FirebaseFirestore.instance.collection('Users').doc(CurrentUser.uid)
-          .update({'friendsCount':(AppCubit.friendsList.length +1)});
+      await FirebaseFirestore.instance.collection('Users').get()
+          .then((value) => value.docs.forEach((element){ if(element.id == friendId){ isFound = true;} }));
+      await FirebaseFirestore.instance.collection('Users').doc(CurrentUser.uid).collection('Friends').get()
+          .then((value) => value.docs.forEach((element){ if(element.data()['Friend'] == friendId){ isFound = false; throw 'You\'re already friend with him';} }));
 
-      // friend(the other user) update
-      FirebaseFirestore.instance.collection('Users').doc(friendId).get().then((value)
+      if(isFound)
       {
-        int friendCount = value.data()!['friendsCount'];
+        await FirebaseFirestore.instance.collection('Users').doc(CurrentUser.uid)
+            .collection('Friends').doc(AppCubit.friendsList.length.toString())
+            .set({'Friend': friendId });
 
-        FirebaseFirestore.instance.collection('Users').doc(friendId)
-            .collection('Friends').doc(friendCount.toString())
-            .set({'Friend': CurrentUser.uid });
+        await FirebaseFirestore.instance.collection('Users').doc(CurrentUser.uid)
+            .update({'friendsCount':(AppCubit.friendsList.length +1)});
 
-        FirebaseFirestore.instance.collection('Users').doc(friendId)
-            .update({'friendsCount': (friendCount+1) });
-      });
+        // friend(the other user) update
+        FirebaseFirestore.instance.collection('Users').doc(friendId).get().then((value)
+        {
+          int friendCount = value.data()!['friendsCount'];
+
+          FirebaseFirestore.instance.collection('Users').doc(friendId)
+              .collection('Friends').doc(friendCount.toString())
+              .set({'Friend': CurrentUser.uid });
+
+          FirebaseFirestore.instance.collection('Users').doc(friendId)
+              .update({'friendsCount': (friendCount+1) });
+        });
+      }
+      else{ throw 'Wrong Id';}
 
       emit(AppAddFriendSuccessState());
     }

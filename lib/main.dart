@@ -10,12 +10,14 @@ import 'package:social_media_app/cubit/bloc_observer.dart';
 import 'package:social_media_app/cubit/login_cubit.dart';
 import 'package:social_media_app/screens/add_post_screen.dart';
 import 'package:social_media_app/screens/app_layout_screen.dart';
+import 'package:social_media_app/screens/friends_screen.dart';
 import 'package:social_media_app/screens/nav_screens/home_screen.dart';
 import 'package:social_media_app/screens/info_screen.dart';
 import 'package:social_media_app/screens/auth_screens/login_screen.dart';
 import 'package:social_media_app/screens/auth_screens/signup_screen.dart';
 import 'package:social_media_app/screens/pick_to_chat_screen.dart';
 import 'package:social_media_app/screens/update_profile_screen.dart';
+
 
 
 void main() async
@@ -54,6 +56,7 @@ class MyApp extends StatelessWidget {
           UpdateProfileScreen.routeName: (_) => UpdateProfileScreen(),
           AddPostScreen.routeName: (_) => AddPostScreen(),
           PickToChatScreen.routeName: (_) => PickToChatScreen(),
+          FriendsScreen.routeName: (_) => FriendsScreen(),
         },
       ),
     );

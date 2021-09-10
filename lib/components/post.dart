@@ -5,19 +5,22 @@ import 'package:social_media_app/constants.dart';
 import 'package:social_media_app/cubit/app_cubit.dart';
 import 'package:social_media_app/models/current_user.dart';
 import 'package:social_media_app/models/post_model.dart';
+import 'package:social_media_app/models/user_model.dart';
 
 class Post extends StatefulWidget {
 
   late final PostModel post;
+  final UserModel? user;
 
-  Post(this.post);
+  Post(this.post,this.user);
 
   @override
   _PostState createState() => _PostState();
 }
 
 class _PostState extends State<Post> {
-  late bool isLiked = false;
+  bool isLiked = false;
+  bool isLikeBtnEnabled = true;
 
   Future<void> openBottomSheet(BuildContext context,PostModel post) async
   {
@@ -63,7 +66,14 @@ class _PostState extends State<Post> {
                                   comment: commentController.text.trim(),
                                   context: context
                               )
-                              .then((value){ Navigator.of(context).pop(); Navigator.of(context).pop(); openBottomSheet(context, widget.post); })
+                              .then((value) {
+                                AppCubit.get(context).getHomePosts(context)
+                                .then((value){
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                  openBottomSheet(context, widget.post);
+                                });
+                              })
                               .catchError((e){ Navigator.of(context).pop();Navigator.of(context).pop(); openBottomSheet(context, widget.post); });
                             }
                           },
@@ -122,8 +132,13 @@ class _PostState extends State<Post> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     isLiked = widget.post.likersIds.contains(CurrentUser.uid);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
       color: Color(0xFF151517),
@@ -143,7 +158,7 @@ class _PostState extends State<Post> {
                 children: [
                   CircleAvatar(
                     radius: 25,
-                    backgroundImage: NetworkImage(widget.post.publisherProfileImageUrl),
+                    backgroundImage: NetworkImage(widget.user==null?CurrentUser.profileImageUrl:widget.user!.profileImageUrl),
                   ),
                   SizedBox(width:10),
                   Column(
@@ -194,11 +209,13 @@ class _PostState extends State<Post> {
                       splashColor:  Colors.teal[900],
                       highlightColor:  Colors.grey.withOpacity(0.5),
                       splashRadius: 18,
-                      onPressed: () async {
+                      onPressed: isLikeBtnEnabled ? () async {
+                        isLikeBtnEnabled = false;
                         setState(()=>isLiked = !isLiked);
-                        await AppCubit.get(context).toggleLike(widget.post.publisherId, widget.post.postId, isLiked, context)
-                        .catchError((e){ setState(()=>isLiked = !isLiked);  });
-                      },
+                        await AppCubit.get(context).toggleLike(widget.post.publisherId, widget.post.postId ,isLiked,context)
+                        .catchError((e){ setState(()=>isLiked = !isLiked);  })
+                        .then((value) => isLikeBtnEnabled = true);
+                      } : (){},
                     ),
                     SizedBox(width: 5),
                     Text(widget.post.postLikesCount.toString()),

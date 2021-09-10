@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:social_media_app/components/loading_spinner.dart';
+import 'package:social_media_app/components/toast.dart';
 
 import 'package:social_media_app/constants.dart';
 import 'package:social_media_app/cubit/app_cubit.dart';
@@ -116,6 +118,23 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        SizedBox(height: 25),
+                        Row(
+                          children: [
+                            Text(
+                              ' Copy your own Id : ',
+                              style: kText1.copyWith(fontWeight: FontWeight.normal),
+                            ),
+                            Container(
+                              child: OutlinedButton(
+                                child: Text('Copy',),
+                                style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
+                                onPressed:()=> Clipboard.setData(ClipboardData(text:CurrentUser.uid))
+                                    .then((value) => toast(context, 'Your Id Copied ', kBlueColor)),
+                              ),
+                            ),
+                          ],
+                        ),
                         SizedBox(height: 20),
                         TextFormField(
                           decoration: InputDecoration(

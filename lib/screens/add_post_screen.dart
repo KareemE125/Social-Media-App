@@ -160,7 +160,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
                               context: context
                           ).then((value){Navigator.of(context).pop(); Navigator.of(context).pop();});
                         }
-
                        },
                     ),
                   ],
