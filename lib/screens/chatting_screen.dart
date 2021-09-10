@@ -10,14 +10,20 @@ import 'package:social_media_app/models/current_user.dart';
 import 'package:social_media_app/models/message_model.dart';
 import 'package:social_media_app/models/user_model.dart';
 
-class ChattingScreen extends StatelessWidget {
+class ChattingScreen extends StatefulWidget {
   static const routeName = '/chatting-screen';
 
   final UserModel friend;
 
   ChattingScreen(this.friend);
 
+  @override
+  State<ChattingScreen> createState() => _ChattingScreenState();
+}
+
+class _ChattingScreenState extends State<ChattingScreen> {
   bool isInit = true;
+
   List<MessageModel> chat = [];
 
   @override
@@ -26,7 +32,7 @@ class ChattingScreen extends StatelessWidget {
     ScrollController scrollController = ScrollController();
     bool isWritingEnabled = true;
 
-    AppCubit.get(context).getChat(chat,friend.uid, scrollController,context).then((value){
+    AppCubit.get(context).getChat(chat,widget.friend.uid, scrollController,context).then((value){
        Future.delayed(Duration(milliseconds: 1000)).then((value){
          if (scrollController.hasClients) {
            scrollController.animateTo(
@@ -51,9 +57,9 @@ class ChattingScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CircleAvatar(radius: 22,
-                      backgroundImage: NetworkImage(friend.profileImageUrl)),
+                      backgroundImage: NetworkImage(widget.friend.profileImageUrl)),
                   SizedBox(width: 10),
-                  Text(friend.name, style: kText1,),
+                  Text(widget.friend.name, style: kText1,),
                 ],
               ),
               titleSpacing: 0,
@@ -112,11 +118,11 @@ class ChattingScreen extends StatelessWidget {
                         child: Icon(isWritingEnabled? FontAwesomeIcons.solidPaperPlane : FontAwesomeIcons.hourglassHalf) ,
                         onPressed: isWritingEnabled? () async {
                           if (messageController.text.trim().isNotEmpty) {
-                            isWritingEnabled = false;
+                            setState((){ isWritingEnabled = false; });
                             String message = messageController.text.trim();
                             messageController.text = '';
-                            await cubit.sendMessage(friend.uid, message,context);
-                            isWritingEnabled = true;
+                            await cubit.sendMessage(widget.friend.uid, message,context);
+                            setState((){ isWritingEnabled = true; });
                           }
                         } : null,
                       ),
@@ -134,5 +140,4 @@ class ChattingScreen extends StatelessWidget {
       },
     );
   }
-
 }

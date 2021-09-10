@@ -30,6 +30,10 @@ void main() async
    await Firebase.initializeApp()
         .then((value) => FirebaseAuth.instance.authStateChanges().listen((user){
           print('----------------------------------------------------------');
+          if(user == null){
+            print(9999);
+          }else{ print(6666); }
+          print('----------------------------------------------------------');
           AppCubit.user = user;
    } ));
 

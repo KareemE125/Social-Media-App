@@ -82,11 +82,11 @@ class LoginCubit extends Cubit<LoginStates>
     {
       LoadingSpinner(context);
       CurrentUser.uid = null;
+      AppCubit.user = null;
+      emit(LogoutSuccessState());
       await FirebaseAuth.instance.signOut();
       Navigator.of(context).pop();
-      emit(LogoutSuccessState());
       main();
-      Restart.restartApp();
     }
     catch(error)
     {

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:shifting_tabbar/shifting_tabbar.dart';
 import 'package:social_media_app/components/shifting_tab.dart';
 import 'package:social_media_app/components/toast.dart';
@@ -125,7 +126,7 @@ class AppLayoutScreen extends StatelessWidget
                 IconButton(
                   icon: Icon(Icons.logout),
                   onPressed: () async =>
-                  await LoginCubit.get(context).logout(context),
+                  await LoginCubit.get(context).logout(context).then((value) => Restart.restartApp()),
                 ),
               ],
             )
@@ -163,7 +164,7 @@ class AppLayoutScreen extends StatelessWidget
                   IconButton(
                     icon: Icon(FontAwesomeIcons.signOutAlt,size: 21,),
                     onPressed: () async =>
-                    await LoginCubit.get(context).logout(context),
+                    await LoginCubit.get(context).logout(context).then((value) => Restart.restartApp()),
                   ),
                 ],
               );
