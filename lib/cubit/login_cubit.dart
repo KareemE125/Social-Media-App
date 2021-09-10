@@ -7,7 +7,9 @@ import 'package:restart_app/restart_app.dart';
 import 'package:social_media_app/components/loading_spinner.dart';
 
 import 'package:social_media_app/components/toast.dart';
+import 'package:social_media_app/cubit/app_cubit.dart';
 import 'package:social_media_app/cubit/login_states.dart';
+import 'package:social_media_app/main.dart';
 import 'package:social_media_app/models/current_user.dart';
 import 'package:social_media_app/screens/app_layout_screen.dart';
 
@@ -79,9 +81,11 @@ class LoginCubit extends Cubit<LoginStates>
     try
     {
       LoadingSpinner(context);
+      CurrentUser.uid = null;
       await FirebaseAuth.instance.signOut();
       Navigator.of(context).pop();
       emit(LogoutSuccessState());
+      main();
       Restart.restartApp();
     }
     catch(error)

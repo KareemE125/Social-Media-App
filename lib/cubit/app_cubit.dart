@@ -310,8 +310,6 @@ class AppCubit extends Cubit<AppStates>
 
       await FirebaseFirestore.instance.collection('Users').doc(user!.uid)
           .update({'postCount': (CurrentUser.postCount+1),});
-      
-      CurrentUser.postCount++;
 
       emit(AppPostingSuccessState());
     }
