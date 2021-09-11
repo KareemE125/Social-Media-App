@@ -195,6 +195,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
+  flutter_restart:
+    dependency: "direct main"
+    description:
+      name: flutter_restart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -310,13 +317,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.0.0"
-  restart_app:
-    dependency: "direct main"
-    description:
-      name: restart_app
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.3"
   shifting_tabbar:
     dependency: "direct main"
     description:

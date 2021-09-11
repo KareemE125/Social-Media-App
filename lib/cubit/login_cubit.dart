@@ -3,8 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:restart_app/restart_app.dart';
-import 'package:social_media_app/components/loading_spinner.dart';
+
 
 import 'package:social_media_app/components/toast.dart';
 import 'package:social_media_app/cubit/app_cubit.dart';
@@ -80,14 +79,16 @@ class LoginCubit extends Cubit<LoginStates>
     emit(LogoutLoadingState());
     try
     {
-      LoadingSpinner(context);
-      CurrentUser.uid = null;
-      AppCubit.user = null;
-      emit(LogoutSuccessState());
+     // LoadingSpinner(context);
+      //CurrentUser.uid = null;
+      //AppCubit.user = null;
+      //emit(LogoutSuccessState());
       await FirebaseAuth.instance.signOut();
-      Navigator.of(context).pop();
+      // Navigator.of(context).pop();
       main();
-      emit(LogoutSuccessState());
+      //emit(LogoutSuccessState());
+      //runApp(MyApp());
+      //await Restart.restartApp();
     }
     catch(error)
     {

@@ -18,8 +18,6 @@ import 'package:social_media_app/screens/auth_screens/signup_screen.dart';
 import 'package:social_media_app/screens/pick_to_chat_screen.dart';
 import 'package:social_media_app/screens/update_profile_screen.dart';
 
-
-
 void main() async
 {
   runApp(Loading());
@@ -28,14 +26,16 @@ void main() async
   Bloc.observer = MyBlocObserver();
 
    await Firebase.initializeApp()
-        .then((value) => FirebaseAuth.instance.authStateChanges().listen((user){
-          print('----------------------------------------------------------');
-          if(user == null){
-            print(9999);
-          }else{ print(6666); }
-          print('----------------------------------------------------------');
+   .then((value) => FirebaseAuth.instance.authStateChanges().listen((user){
           AppCubit.user = user;
-   } ));
+          print('----------------------------------------------------------');
+          if(AppCubit.user == null){
+            print(9999);
+          }else{ print(AppCubit.user!.uid.toString()); }
+          print('----------------------------------------------------------');
+   }));
+
+
 
   runApp(MyApp());
 }
