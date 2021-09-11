@@ -524,9 +524,10 @@ class AppCubit extends Cubit<AppStates>
         else
         {
           chatsList.clear();
-          event.docs.forEach((element) {
+          for(var element in event.docs)
+          {
             chatsList.add(ChatModel(friendsList.firstWhere((friend) => friend.uid == element.id)));
-          });
+          }
         }
         emit(AppGetAllChatsSuccessState());
       });

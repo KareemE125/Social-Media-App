@@ -126,7 +126,7 @@ class AppLayoutScreen extends StatelessWidget
                 IconButton(
                   icon: Icon(Icons.logout),
                   onPressed: () async =>
-                  await LoginCubit.get(context).logout(context).then((value) async => await FlutterRestart.restartApp()),
+                  await LoginCubit.get(context).logout(context),
                 ),
               ],
             )
@@ -164,7 +164,7 @@ class AppLayoutScreen extends StatelessWidget
                   IconButton(
                     icon: Icon(FontAwesomeIcons.signOutAlt,size: 21,),
                     onPressed: () async =>
-                    await LoginCubit.get(context).logout(context).then((value) async => await FlutterRestart.restartApp()),
+                    await LoginCubit.get(context).logout(context),
                   ),
                 ],
               );
