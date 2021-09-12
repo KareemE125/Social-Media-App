@@ -472,7 +472,7 @@ class AppCubit extends Cubit<AppStates>
             .set({'Friend': friendId });
 
         await FirebaseFirestore.instance.collection('Users').doc(CurrentUser.uid)
-            .update({'friendsCount':(AppCubit.friendsList.length +1)});
+            .update({'friendsCount':(AppCubit.friendsList.length)});
 
         // friend(the other user) update
         FirebaseFirestore.instance.collection('Users').doc(friendId).get().then((value)

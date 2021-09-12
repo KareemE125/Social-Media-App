@@ -26,16 +26,7 @@ void main() async
   Bloc.observer = MyBlocObserver();
 
    await Firebase.initializeApp()
-   .then((value) => FirebaseAuth.instance.authStateChanges().listen((user){
-          AppCubit.user = user;
-          print('----------------------------------------------------------');
-          if(AppCubit.user == null){
-            print(9999);
-          }else{ print(AppCubit.user!.uid.toString()); }
-          print('----------------------------------------------------------');
-   }));
-
-
+   .then((value) => FirebaseAuth.instance.authStateChanges().listen((user){ AppCubit.user = user; }));
 
   runApp(MyApp());
 }
