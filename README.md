@@ -5,6 +5,15 @@ This app is developed using Flutter Framework.
 State mangment using Cubit (BLoC).
 MyShop App is working in cooperation with Google Firebase.
 
+# some of the functionalities
+1) users
+2) add posts (only text / text with photo)
+3) likes
+4) comments
+5) chats
+6) add friend with Id (for a user to add me he should take my Id form a friend or from me) to have higher privacy
+7) edit profile (profile image, cover imager, name, bio)
+
 ## Getting Started
 A few resources to get you started if this is your first Flutter project:
 
