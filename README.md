@@ -3,7 +3,7 @@
 Social Media App.
 This app is developed using Flutter Framework.
 State mangment using Cubit (BLoC).
-MyShop App is working in cooperation with Google Firebase.
+My App is working in cooperation with Google Firebase.
 
 # some of the functionalities
 1) users
